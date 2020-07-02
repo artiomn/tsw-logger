@@ -11,10 +11,6 @@
 
 #include <boost/current_function.hpp>
 
-//#include "metadata.h"
-//#include "types.h"
-
-
 namespace tsw
 {
 
@@ -54,7 +50,7 @@ public:
 public:
     void set_level(LogLevel level) noexcept;
     void set_level(const std::string &module_name, LogLevel level) noexcept;
-    LogLevel get_level() const noexcept;
+    LogLevel get_level(const std::string &module_name) const noexcept;
     void log_module_message(const LogLevel level, const char *file_name,
                             const uint32_t line_no, const char *function_name,
                             const char *module_name,
@@ -62,6 +58,9 @@ public:
     void log_message(const LogLevel level, const char *file_name,
                      const uint32_t line_no, const char *function_name,
                      const char *format, ...) noexcept;
+    void log_message(const LogLevel level, const char *file_name,
+                     const uint32_t line_no, const char *function_name,
+                     const std::string &message) noexcept;
     void enable() noexcept;
     void disable() noexcept;
     void flush() noexcept;

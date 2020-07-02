@@ -6,6 +6,7 @@
   */
 
 #include <map>
+#include <memory>
 
 #include <P7_Client.h>
 #include <P7_Trace.h>
@@ -40,7 +41,7 @@ public:
         : logger_client_(P7_Create_Client(parameters.c_str()))
     {
         if (!logger_client_) TSW_THROW(Exception, "P7 client can not be created");
-        logger_trace_ = P7_Create_Trace(logger_client_, "Log channel");
+        logger_trace_.reset(P7_Create_Trace(logger_client_.get(), "Log channel"));
         if (!logger_trace_)
         {
             logger_client_->Release();
@@ -62,9 +63,9 @@ public:
         logger_trace_->Set_Verbosity(get_module(module_name), translate_log_level(level));
     }
 
-    inline LogLevel get_level() const noexcept
+    inline LogLevel get_level(const char *module_name) const noexcept
     {
-        // todo: implement.
+        logger_trace_->Get_Verbosity(get_module(module_name));
         return LogLevel::Critical;
     }
 
@@ -91,7 +92,7 @@ public:
     }
 
 private:
-    inline void *get_module(const char *name) noexcept
+    void *get_module(const char *name) const noexcept
     {
         if (!name) return nullptr;
 
@@ -102,7 +103,7 @@ private:
         return hm;
     }
 
-    inline const eP7Trace_Level translate_log_level(LogLevel level) noexcept
+    eP7Trace_Level translate_log_level(LogLevel level) noexcept
     {
         eP7Trace_Level result = EP7TRACE_LEVEL_CRITICAL;
 
@@ -130,9 +131,18 @@ private:
         return result;
     }
 
+    template<typename ObjectClass>
+    struct P7Releaser
+    {
+        void operator()(ObjectClass *object)
+        {
+            object->Release();
+        }
+    };
+
 private:
-    IP7_Client  *logger_client_;
-    IP7_Trace   *logger_trace_;
+    std::unique_ptr<IP7_Client, P7Releaser<IP7_Client>> logger_client_;
+    std::unique_ptr<IP7_Trace, P7Releaser<IP7_Trace>>   logger_trace_;
 };
 
 
@@ -195,9 +205,9 @@ void Logger::set_level(const std::string &module_name, LogLevel level) noexcept
 }
 
 
-LogLevel Logger::get_level() const noexcept
+LogLevel Logger::get_level(const std::string &module_name) const noexcept
 {
-    return logger_->get_level();
+    return logger_->get_level(module_name.c_str());
 }
 
 
@@ -224,6 +234,16 @@ void Logger::log_message(const LogLevel level, const char *file_name,
 }
 
 
+void Logger::log_message(const LogLevel level, const char *file_name,
+                         const uint32_t line_no, const char *function_name,
+                         const std::string &message) noexcept
+{
+    if (!enabled_) return;
+
+    logger_->log_module_message(level, file_name, line_no, function_name, nullptr, message.c_str());
+}
+
+
 void Logger::enable() noexcept
 {
     enabled_ = true;
@@ -240,9 +260,5 @@ void Logger::flush() noexcept
 {
     logger_->flush();
 }
-
-// Наконец он добился своего - был там, куда так стремился.
-// На западе над горизонтом, словно сине-зеленая Луна, поднималась Земля в последней четверти.
-// Над головой среди черного звездного неба сияло Солнце, а под ним была настоящая Луна.
 
 } // namespace tsw
