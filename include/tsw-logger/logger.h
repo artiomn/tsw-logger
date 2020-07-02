@@ -26,7 +26,7 @@ enum class LogLevel
 };
 
 
-#define SET_DEBUG_LEVEL(level) (tsw::Logger::get_logger("default").set_level(level), LogLevel::Info)
+#define SET_LOG_LEVEL(level) (tsw::Logger::get_logger("default").set_level(level))
 
 #define LOG_TO_LOGGER(logger, level, ...) (logger.log_message(level, __FILE__, __LINE__, BOOST_CURRENT_FUNCTION, __VA_ARGS__))
 #define LOG_TO(logger_name, level, ...) (LOG_TO_LOGGER(tsw::Logger::get_logger(logger_name), level, __VA_ARGS__))
