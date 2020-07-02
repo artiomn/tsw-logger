@@ -53,8 +53,7 @@ public:
 
     ~LoggerImpl()
     {
-        logger_trace_->Release();
-        logger_client_->Release();
+        flush();
     }
 
 public:
