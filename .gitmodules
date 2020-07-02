@@ -1,0 +1,3 @@
+[submodule "third_party/baical_p7"]
+	path = third_party/baical_p7
+	url = https://github.com/artiomn/baical_p7
