@@ -65,8 +65,7 @@ public:
 
     inline LogLevel get_level(const char *module_name) const noexcept
     {
-        logger_trace_->Get_Verbosity(get_module(module_name));
-        return LogLevel::Critical;
+        return translate_log_level(logger_trace_->Get_Verbosity(get_module(module_name)));
     }
 
     inline void log_module_message(const LogLevel level, const char *file_name,
@@ -103,7 +102,7 @@ private:
         return hm;
     }
 
-    eP7Trace_Level translate_log_level(LogLevel level) noexcept
+    eP7Trace_Level translate_log_level(LogLevel level) const noexcept
     {
         eP7Trace_Level result = EP7TRACE_LEVEL_CRITICAL;
 
@@ -125,6 +124,32 @@ private:
             case LogLevel::Critical:
             case LogLevel::Panic:
                 result = EP7TRACE_LEVEL_CRITICAL;
+            break;
+        }
+
+        return result;
+    }
+
+    LogLevel translate_log_level(eP7Trace_Level level) const noexcept
+    {
+        LogLevel result = LogLevel::Critical;
+
+        switch (level)
+        {
+            case EP7TRACE_LEVEL_DEBUG:
+                result = LogLevel::Debug;
+            break;
+            case EP7TRACE_LEVEL_INFO:
+                result = LogLevel::Info;
+            break;
+            case EP7TRACE_LEVEL_WARNING:
+                result = LogLevel::Warning;
+            break;
+            case EP7TRACE_LEVEL_ERROR:
+                result = LogLevel::Error;
+            break;
+            case EP7TRACE_LEVEL_CRITICAL:
+                result = LogLevel::Critical;
             break;
         }
 
