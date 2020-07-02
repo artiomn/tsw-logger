@@ -36,5 +36,9 @@ target_link_libraries("${PROJECT_NAME}" tsw-logger)
 2. In the code:
 
 ```cpp
+#include <tsw-logger/logger.h>
+
+...
+
 LOG(tsw::LogLevel::Debug, "MESSAGE TO LOG!");
 ```
