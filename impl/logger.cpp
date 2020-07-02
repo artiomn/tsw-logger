@@ -10,9 +10,9 @@
 #include <P7_Client.h>
 #include <P7_Trace.h>
 
-#include <tsw/error.h>
-#include <tsw/logger.h>
-#include <tsw/types.h>
+#include <tsw-logger/error.h>
+#include <tsw-logger/logger.h>
+//#include <tsw/types.h>
 
 
 namespace tsw
@@ -26,14 +26,14 @@ namespace tsw
 
 namespace impl
 {
-std::map<String, std::unique_ptr<Logger>> loggers;
+std::map<std::string, std::unique_ptr<Logger>> loggers;
 }
 
 class Logger::LoggerImpl
 {
 public:
-    LoggerImpl(const String &name,
-               const String &parameters =
+    LoggerImpl(const std::string &name,
+               const std::string &parameters =
                     CLIENT_COMMAND_LINE_SINK CLIENT_SINK_CONSOLE
                     TM(" ")
                     CLIENT_COMMAND_LOG_VERBOSITY LOG_DEFAULT_VERBOSITY)
@@ -136,14 +136,14 @@ private:
 };
 
 
-Logger::Logger(const String &name) :
+Logger::Logger(const std::string &name) :
     name_(name), enabled_(true), logger_(new LoggerImpl(name))
 {
 
 }
 
 
-Logger::Logger(const String &name, const String &parameters) :
+Logger::Logger(const std::string &name, const std::string &parameters) :
     name_(name), enabled_(true), logger_(new LoggerImpl(name, parameters))
 {
 
@@ -155,7 +155,7 @@ Logger::~Logger()
 }
 
 
-Logger &Logger::get_logger(const String& name)
+Logger &Logger::get_logger(const std::string& name)
 {
     try
     {
@@ -169,7 +169,7 @@ Logger &Logger::get_logger(const String& name)
 }
 
 
-Logger &Logger::get_logger(const String& name, const String &parameters)
+Logger &Logger::get_logger(const std::string& name, const std::string &parameters)
 {
     try
     {
@@ -189,7 +189,7 @@ void Logger::set_level(LogLevel level) noexcept
 }
 
 
-void Logger::set_level(const String &module_name, LogLevel level) noexcept
+void Logger::set_level(const std::string &module_name, LogLevel level) noexcept
 {
     logger_->set_level(module_name.c_str(), level);
 }

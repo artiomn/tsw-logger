@@ -11,8 +11,8 @@
 
 #include <boost/current_function.hpp>
 
-#include "metadata.h"
-#include "types.h"
+//#include "metadata.h"
+//#include "types.h"
 
 
 namespace tsw
@@ -42,18 +42,18 @@ enum class LogLevel
 class Logger
 {
 public:
-    Logger(const String &name);
-    Logger(const String &name, const String &parameters);
+    Logger(const std::string &name);
+    Logger(const std::string &name, const std::string &parameters);
     ~Logger();
     friend class std::default_delete<Logger>;
 
 public:
-    static Logger &get_logger(const String& name);
-    static Logger &get_logger(const String& name, const String &parameters);
+    static Logger &get_logger(const std::string& name);
+    static Logger &get_logger(const std::string& name, const std::string &parameters);
 
 public:
     void set_level(LogLevel level) noexcept;
-    void set_level(const String &module_name, LogLevel level) noexcept;
+    void set_level(const std::string &module_name, LogLevel level) noexcept;
     LogLevel get_level() const noexcept;
     void log_module_message(const LogLevel level, const char *file_name,
                             const uint32_t line_no, const char *function_name,
@@ -68,7 +68,7 @@ public:
 
 private:
    class                        LoggerImpl;
-   String                       name_;
+   std::string                  name_;
    bool                         enabled_;
    std::unique_ptr<LoggerImpl>  logger_;
 };
