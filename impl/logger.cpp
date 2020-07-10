@@ -13,7 +13,6 @@
 
 #include <tsw-logger/error.h>
 #include <tsw-logger/logger.h>
-//#include <tsw/types.h>
 
 
 namespace tsw
@@ -38,17 +37,17 @@ public:
                     CLIENT_COMMAND_LINE_SINK CLIENT_SINK_CONSOLE
                     TM(" ")
                     CLIENT_COMMAND_LOG_VERBOSITY LOG_DEFAULT_VERBOSITY)
-        : logger_client_(P7_Create_Client(parameters.c_str()))
+        : logger_client_{P7_Create_Client(parameters.c_str())}
     {
         if (!logger_client_) TSW_THROW(Exception, "P7 client can not be created");
+
         logger_trace_.reset(P7_Create_Trace(logger_client_.get(), "Log channel"));
         if (!logger_trace_)
         {
-            logger_client_->Release();
             TSW_THROW(Exception, "P7 trace cant not be created");
         }
-
         logger_client_->Share(name.c_str());
+        logger_trace_->Share(name.c_str());
     }
 
     ~LoggerImpl()
@@ -160,7 +159,8 @@ private:
     {
         void operator()(ObjectClass *object)
         {
-            object->Release();
+            // Will be called automatically.
+//            object->Release();
         }
     };
 
